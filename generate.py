@@ -24,7 +24,8 @@ def generate_chrome(project_path: str):
     except KeyError:
         print("missing background scripts definition")
     try:
-        manifest['content_scripts']['js'].append("browser-polyfill.js")
+        for i in manifest['content_scripts']:
+            i['js'].append("browser-polyfill.js")
     except KeyError:
         print("missing content scripts definition")
     manifest_out_str = json.dumps(manifest, sort_keys=True, indent=4)
