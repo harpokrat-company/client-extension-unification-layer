@@ -20,6 +20,10 @@ def generate_chrome(project_path: str):
     manifest_str = readfile(manifest_path)
     manifest = json.loads(manifest_str)
     try:
+        manifest['permissions'].append("declarativeContent")
+    except KeyError:
+        print("missing permissions definition")
+    try:
         manifest['background']['scripts'].append("browser-polyfill.js")
     except KeyError:
         print("missing background scripts definition")
