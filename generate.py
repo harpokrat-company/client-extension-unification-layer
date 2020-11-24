@@ -24,12 +24,18 @@ def generate_chrome(project_path: str):
     except KeyError:
         print("missing permissions definition")
     try:
-        manifest['background']['scripts'].append("browser-polyfill.js")
+        scripts = manifest['background']['scripts']
+        new_scripts = ["browser-polyfill.js"]
+        new_scripts.extend(scripts)
+        manifest['background']['scripts'] = new_scripts
     except KeyError:
         print("missing background scripts definition")
     try:
         for i in manifest['content_scripts']:
-            i['js'].append("browser-polyfill.js")
+            scripts = i['js']
+            new_scripts = ["browser-polyfill.js"]
+            new_scripts.extend(scripts)
+            i['js'] = new_scripts
     except KeyError:
         print("missing content scripts definition")
     manifest_out_str = json.dumps(manifest, sort_keys=True, indent=4)
@@ -38,7 +44,7 @@ def generate_chrome(project_path: str):
     popup_str = readfile(popup_path)
     popup_out_str = popup_str.replace('<script', '<script src"browser-polyfill.js"></script> <script')
     shutil.rmtree(chrome_out_path, True)
-    shutil.copytree(project_path, chrome_out_path)
+    shutil.copytree(project_path, chrome_out_path, ignore = shutil.ignore_patterns("node_modules"))
     shutil.copy("browser-polyfill.js", chrome_out_path + "/browser-polyfill.js")
     with open(popup_out_path, 'w') as f:
         f.write(popup_out_str)
